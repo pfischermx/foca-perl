@@ -1,0 +1,108 @@
+#!/usr/local/bin/perl
+# 
+# foca-fanticide.pl
+# 
+# Author(s): Pablo Fischer (pfs@yahoo-inc.com)
+# Created: 06/14/2012 04:19:17 PM UTC 04:19:17 PM
+
+use strict;
+use warnings;
+use Data::Dumper;
+use Fcntl;
+use FindBin;
+use Seco::Getopt;
+# Foca libs/modules
+use lib "$FindBin::RealBin/../lib/";
+use Yahoo::UNI::SE::Foca::Tools::Logger;
+# Yahoo libs/modules
+use MDBM_File;
+
+my $opt = Seco::Getopt->new(
+        options => {
+            'pid-file=s'        => 'MDBM file where the PID files are stored',
+            'run-once'          => 'Only run one time',
+            'debug'             => 'Run in debug mode',
+            'frequency=i'       => 'Frequency (in seconds) to keep checking for dead PIDs',
+        },
+        required => [
+            'pid-file',
+        ],
+        default => {
+            'frequency'         => 10,
+        },
+        description => "Foca - Kill imaginary or closed requests/pids");
+
+my $pid_file    = $opt->get('pid-file');
+my $run_once    = $opt->get('run-once') || 0;
+my $debug       = $opt->get('debug') || 0;
+
+die "$pid_file does not exist" unless (-f $pid_file);
+
+init_logger();
+use_debug(1) if $debug;
+
+while(1) {
+    # Collect connections that are still open
+    my %established_ports = ();
+    open(NETSTAT_H, 'netstat -tan |');
+    while(<NETSTAT_H>) {
+        chomp;
+        next unless (/^tcp/);
+        next unless (/ESTABLISHED\s+$/);
+        my @columns = map {split ':'} split ' ';
+        next unless (scalar @columns == 8);
+        $established_ports{$columns[6]} = 1;
+    }
+    my %pid_connections;
+    tie(
+            %pid_connections,
+            'MDBM_File',
+            $FindBin::RealBin . '/../var/foca/server_pids.mdbm',
+            O_RDWR|O_CREAT|O_NONBLOCK,
+            0644,
+            0,
+            0);
+   
+    if (%pid_connections) {
+        my $mdbm_obj = tied %pid_connections;
+        while (my ($pid, $port) = each %pid_connections) {
+            # Pid still running?
+            if (-f '/proc/' . $pid . '/status') {
+                log_debug("PID $pid is still running, checking if its connection " .
+                        "is still running");
+                if (defined $established_ports{$port}) {
+                    log_debug("PID $pid is still running and with an active " .
+                            "connection, leaving it");
+                } else {
+                    log_debug("PID $pid is still running but with NO active " .
+                            "connections, trying to kill it..");
+                    log_info("Killing $pid..");
+                    system("kill -9 $pid");
+                    # Give it a second..
+                    sleep(1);
+                    # Done-done with it?
+                    if (-f '/proc/' . $pid . '/status') {
+                        log_error("PID $pid failed to get killed... ");
+                    } else {
+                        log_info("PID $pid has been killed. Removing from MDBM file");
+                        $mdbm_obj->lock();
+                        delete $pid_connections{$pid};
+                        $mdbm_obj->unlock();
+                        $mdbm_obj->sync();
+                    }
+                }
+            } else {
+                log_info("PID $pid is no longer running. Removing from MDBM file");
+                $mdbm_obj->lock();
+                delete $pid_connections{$pid};
+                $mdbm_obj->unlock();
+                $mdbm_obj->sync();
+            }
+        }
+    } else {
+        log_info("MDBM file seems to be empty or no pending connections/pids");
+    }
+    last;
+}
+
+

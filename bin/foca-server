@@ -1,0 +1,47 @@
+#!/usr/local/bin/perl
+# 
+# foca-server
+# 
+# Author(s): Pablo Fischer (pfs@yahoo-inc.com)
+# Created: 06/13/2012 04:51:39 PM UTC 04:51:39 PM
+
+use strict;
+use warnings;
+use Data::Dumper;
+use FindBin;
+use Seco::Getopt;
+use lib "$FindBin::RealBin/../lib/";
+use App::Foca::Server;
+
+my $opt = Seco::Getopt->new(
+        options => {
+            'p|port=i'          => 'Where to listen',
+            't|timeout=s'       => 'Global timeout (secs) for commands',
+            'c|command-file=s'  => 'YAML file where allowed commands are',
+            'debug'             => 'Be more verbose',
+        },
+        default => {
+            'p'                 => 6666,
+            't'                 => 60,
+        },
+        required => [
+            'c'
+        ],
+        description => "Foca server");
+
+my $port            = $opt->get('p');
+my $timeout         = $opt->get('t');
+my $commands        = $opt->get('c');
+my $debug           = $opt->get('debug');
+
+my $server = App::Foca::Server->new(
+    port                => $port,
+    commands_file       => $commands,
+    commands_timeout    => $timeout,
+    debug               => $debug);
+
+$server->run_server();
+
+
+
+
