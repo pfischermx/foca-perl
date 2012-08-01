@@ -12,8 +12,41 @@ App::Foca::Client - Foca client
 =head1 DESCRIPTION
 
 L<App::Foca::Client> is the client used to send I<foca> requests to
-a set of hosts. C<foca> requests are basically HTTP requests that go to each
-given host and execute a command via the running C<foca> server.
+a set of hosts. I<foca> requests are basically HTTP requests that go to each
+given host and execute a command via the running I<foca> server (see
+L<App::Foca::Server>).
+
+=head1 EXAMPLE
+
+    my $command         = shift @ARGV || 'true';
+    my $port            = 6666;
+    my $debug           = 1;
+
+    my $client = App::Foca::Client->new(
+                port                => $port,
+                debug               => $debug);
+
+    my @hosts = qw(localhost);
+    my @result = $client->run(\@hosts, $command);
+
+    die "Not able to collect any data" unless @result;
+
+    foreach my $host (@result) {
+        my $status = $host->{'ok'} ? 'OK' : 'ERROR';
+        print "$status: $host->{'hostname'}: $host->{'output'}\n";
+    }
+
+    # or..
+
+    $client->run(\@hosts, $command, {
+            on_host => \&parse_host});
+
+    sub parse_host {
+        my ($host) = @_;
+
+        my $status = $host->{'ok'} ? 'OK' : 'ERROR';
+        print "$status: $host->{'hostname'}: $host->{'output'}\n";
+    }
 
 =cut
 use strict;
@@ -87,7 +120,7 @@ has 'debug' => (
 
 =head2 B<run($hosts, $command, %options)>
 
-Runs the HTTP requests (C<$command>) to the given foca servers (C<$hosts>).
+Runs the HTTP request (C<$command>) to the given foca servers (C<$hosts>).
 C<$hosts> should be an array reference, use FQDN.
 
 By default the method returns an array of hashes. Each hash having the following
@@ -117,6 +150,12 @@ tie the collection of data of each host and send it to a subroutine. Options are
 =back
 
 Each one of the CODE references will get one argument: the hash described before.
+
+Command should be the full command, just as if you were executing it from your
+shell (for example: I<uptime> or I<uptime -V>). This method will take care of
+getting the basename of the command you are calling and look for any extra
+parameters/arguments, if any parameters/arguments are found then they get
+sent as a HTTP header, header would be I<Foca-Cmd-Params>.
 
 =cut
 sub run {
