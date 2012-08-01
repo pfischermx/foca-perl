@@ -34,7 +34,7 @@ Now the question is.. is Foca secure? Well it depends on you. Depends if you
 run it as non-root user and the commands you define. Foca will try to do
 things to protect, for example it will reject all requests that have pipes (|),
 I/O redirection (>, <, <<, >>), additionally the HTTP request will be validated
-before it gets executed via the call of C<validate_request()> (L<App::Foca>
+before it gets executed via the call of C<validate_request()> (L<App::Foca::Server>
 returns true all the time so if you want to add extra functionality please
 create a subclass and re-define the method).
 
@@ -104,11 +104,11 @@ use App::Foca::Tools::Logger;
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 # Some constants
 use constant {
