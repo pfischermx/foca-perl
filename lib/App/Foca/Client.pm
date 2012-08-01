@@ -20,6 +20,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use FindBin;
+use HTTP::Response;
 use Moose;
 use Parallel::ForkManager;
 use WWW::Curl::Easy;
@@ -122,8 +123,10 @@ sub run {
     my ($self, $hosts, $command, $options) = @_;
 
     # Some basic verification
+    log_die("No hosts were given") unless $hosts;
+    log_die("Hosts are not an array ref") unless (ref $hosts eq 'ARRAY');
     log_die("No command was given") unless $command;
-
+    
     # Ok, get the command args and params
     my ($foca_cmd, $foca_args) = ($command, '');
     if ($command =~ /(.+?)\s+(.+?)$/) {
@@ -177,9 +180,6 @@ sub run {
                     ref $options->{'on_host'} eq 'CODE';
             });
 
-    my $ua = new LWP::UserAgent;
-    $ua->timeout($self->{'timeout'});
-    
     foreach my $host (@{$hosts}) {
         $pm->start($host) and next;
 
