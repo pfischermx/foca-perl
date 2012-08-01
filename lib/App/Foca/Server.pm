@@ -102,6 +102,14 @@ use YAML::Syck qw(LoadFile);
 use App::Foca::Server::HTTP;
 use App::Foca::Tools::Logger;
 
+=head1 VERSION
+
+Version 0.01
+
+=cut
+
+our $VERSION = '0.01';
+
 # Some constants
 use constant {
     FOCA_RUN_RC_OK              => 100,

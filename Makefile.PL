@@ -1,0 +1,26 @@
+use strict;
+use warnings;
+use ExtUtils::MakeMaker;
+
+WriteMakefile(
+    NAME                => 'App::Foca',
+    AUTHOR              => q{Pablo Fischer <pablo@yahoo-inc.com>},
+    VERSION_FROM        => 'lib/App/Foca.pm',
+    ABSTRACT_FROM       => 'lib/App/Foca.pm',
+    SKIP                => ['examples/example_commands.yaml',
+        'examples/foca-client', 'examples/foca-server'],
+    PREREQ_PM => {
+        'Cache::FastMmap'           => 0,
+        'Data::Dumper'              => 0,
+        'HTTP::Status'              => 0,
+        'HTTP::Response'            => 0,
+        'IPC::Cmd'                  => 0,
+        'Linux::Proc::Net::TCP'     => 0,
+        'Moose'                     => 0,
+        'Parallel::ForkManager'     => 0,
+        'Time::HiRes'               => 0,
+        'WWW::Curl::Easy'           => 0,
+        'YAML::Syck'                => 0,
+        'Test::More'                => 0,
+    },
+);
