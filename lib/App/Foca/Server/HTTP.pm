@@ -7,7 +7,7 @@ package App::Foca::Server::HTTP;
 
 =head1 NAME
 
-App::Foca::Server:HTTP - Foca HTTP server
+App::Foca::Server::HTTP - Foca HTTP server
 
 =head1 DESCRIPTION
 
