@@ -5,8 +5,8 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME                => 'App::Foca',
     AUTHOR              => q{Pablo Fischer <pablo@yahoo-inc.com>},
-    VERSION_FROM        => 'lib/App/Foca.pm',
-    ABSTRACT_FROM       => 'lib/App/Foca.pm',
+    VERSION_FROM        => 'lib/App/Foca/Server.pm',
+    ABSTRACT            => 'Foca application - server and client',
     SKIP                => ['examples/example_commands.yaml',
         'examples/foca-client', 'examples/foca-server'],
     PREREQ_PM => {

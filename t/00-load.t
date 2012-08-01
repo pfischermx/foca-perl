@@ -3,8 +3,8 @@
 use Test::More tests => 1;
 
 BEGIN {
-    use_ok( 'App::Foca' ) || print "Bail out!
+    use_ok( 'App::Foca::Server' ) || print "Bail out!
 ";
 }
 
-diag( "Testing App::Foca $App::Foca::VERSION, Perl $], $^X" );
+diag( "Testing App::Foca::Server $App::Foca::Server::VERSION, Perl $], $^X" );
