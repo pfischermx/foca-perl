@@ -2,6 +2,14 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
+my $meta_merge = {
+    META_MERGE => {
+        resources => {
+            repository  => 'https://github.com/pfischermx/foca-perl',
+        },
+    }
+};
+
 WriteMakefile(
     NAME                => 'App::Foca',
     AUTHOR              => q{Pablo Fischer <pablo@yahoo-inc.com>},
@@ -23,4 +31,5 @@ WriteMakefile(
         'YAML::Syck'                => 0,
         'Test::More'                => 0,
     },
+    $ExtUtils::MakeMaker::VERSION >= 6.50 ? (%$meta_merge) : (),
 );
