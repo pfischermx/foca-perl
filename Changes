@@ -1,5 +1,8 @@
 Revision history for App-Foca
 
+0.03    06-Aug-2012
+	Add missing dependency HTTP::Daemon
+
 0.02    01-Aug-2012
 	Documentation changes
 
