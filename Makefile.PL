@@ -22,6 +22,7 @@ WriteMakefile(
         'Data::Dumper'              => 0,
         'HTTP::Status'              => 0,
         'HTTP::Response'            => 0,
+        'HTTP::Daemon'              => 0,
         'IPC::Cmd'                  => 0,
         'Linux::Proc::Net::TCP'     => 0,
         'Moose'                     => 0,
