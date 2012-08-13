@@ -15,4 +15,11 @@ eval "use Pod::Coverage $min_pc";
 plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage"
     if $@;
 
-all_pod_coverage_ok();
+plan tests => 3;
+# Who the hell documents private methods or BUILD/new (in Moose)?!
+my $trustme = { also_private => [qr/^(new|BUILD)$/] };
+
+
+pod_coverage_ok('App::Foca::Server', $trustme);
+pod_coverage_ok('App::Foca::Server::HTTP', $trustme);
+pod_coverage_ok('App::Foca::Client', $trustme);

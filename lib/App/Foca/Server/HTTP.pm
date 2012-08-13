@@ -21,7 +21,14 @@ use warnings;
 use HTTP::Daemon;
 use base qw(HTTP::Daemon);
 
-# This is the only method we need!
+=head1 Methods
+
+=head2 B<product_tokens()>
+
+Overrides C<product_tokens()> of L<HTTP::Daemon> by making clear this web
+server is 'Foca'.
+
+=cut
 sub product_tokens {
     my ($self) = @_;
     my $parent_token = $self->SUPER::product_tokens();
